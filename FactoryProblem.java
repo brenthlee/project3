@@ -65,25 +65,21 @@ public class FactoryProblem {
         l[2][0] = 2;
         for (int i = 1; i < n; i++) {
             first = f1[i-1] + a1[i];
-            System.out.println("f first: " + first);
             second = f2[i-1] + t2[i-1] + a1[i];
-            System.out.println("f second: " + second);
             if (first < second) {
                 f1[i] = first;
                 l[1][i] = 1;
             } else {
-                f2[i] = second;
+                f1[i] = second;
                 l[1][i] = 2;
             }
             first = f2[i-1] + a2[i];
-            System.out.println("s first: " + first);
             second = f1[i-1] + t1[i-1] + a2[i];
-            System.out.println("s second: " + second);
             if (first < second) {
                 f2[i] = first;
                 l[2][i] = 2;
             } else {
-                f1[i] = second;
+                f2[i] = second;
                 l[2][i] = 1;
             }
         }
