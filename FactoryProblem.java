@@ -6,6 +6,7 @@
  */
 
 import java.util.*;
+import java.io.*;
 
 public class FactoryProblem {
 
@@ -22,27 +23,86 @@ public class FactoryProblem {
             System.exit(0);
         }
         System.out.println("");
-        int n = Integer.parseInt(scanner.nextLine());
+        int n = scanner.nextInt();  //number of stations
+        int e1 = scanner.nextInt(); //enter time for line 1
+        int e2 = scanner.nextInt(); //enter time for line 2
+        int x1 = scanner.nextInt(); //exit time for line 1
+        int x2 = scanner.nextInt(); //exit time for line 2
+        int[] a1 = new int[n];      //time for each station for line 1
+        int[] a2 = new int[n];      //time for each station for line 2
+        int[] t1 = new int[n-1];    //transfer time from line 1 to 2
+        int[] t2 = new int[n-1];    //transfer time from line 2 to 1
+        int[][] l = new int[3][n];
+        for (int i = 0; i < n; i++) {
+            a1[i] = scanner.nextInt();
+            //System.out.println("a1["+(i+1)+"]="+a1[i]);
+        }
+        for (int i = 0; i < n; i++) {
+            a2[i] = scanner.nextInt();
+            //System.out.println("a2["+(i+1)+"]="+a2[i]);
+        }
+        for (int i = 0; i < n-1; i++) {
+            t1[i] = scanner.nextInt();
+            //System.out.println("t1["+(i+1)+"]="+t1[i]);
+        }
+        for (int i = 0; i < n-1; i++) {
+            t2[i] = scanner.nextInt();
+            //System.out.println("t2["+(i+1)+"]="+t2[i]);
+        }
+        int[] ans = assemble(a1, a2, t1, t2, e1, e2, x1, x2, n, l);
+        System.out.println("Fastest time is: " + ans[1]);
+        System.out.println("\nThe optimal route is:");
+        printSolution(l[ans[0]], n);
     }
 
-    //array of times for each station, times to transfer, enter times, exit times, number of stations
-    private static int timeAssembly(int[][] a, int[][] t, int[] e, int[] x, int nStation) {
-        int[] t1 = new int[nStation]; // number of stations
-        int[] t2 = new int[nStation]; // number of stations
-        // initial time to leave line 1, station 1
-        t1[0] = e[0] + a[0][0];
-        // initial time to leave line 2, station 1
-        t2[0] = e[1] + a[1][0];
-
-        for (int i = 1; i < nStation; i++) {
-            t1[i] = Math.min(
-                        t1[i-1] + a[0][i],
-                        t2[i-1] + t[1][i] + a[0][i]);
-            t2[i] = Math.min(
-                        t2[i-1] + a[1][i],
-                        t1[i-1] + t[0][i] + a[1][i]);
+    private static int[] assemble(int[] a1, int[] a2, int[] t1, int[] t2, int e1, int e2, int x1, int x2, int n, int[][] l) {
+        int[] f1 = new int[n];
+        int[] f2 = new int[n];
+        int first, second;
+        f1[0] = e1 + a1[0];
+        l[1][0] = 1;
+        f2[0] = e2 + a2[0];
+        l[2][0] = 2;
+        for (int i = 1; i < n; i++) {
+            first = f1[i-1] + a1[i];
+            System.out.println("f first: " + first);
+            second = f2[i-1] + t2[i-1] + a1[i];
+            System.out.println("f second: " + second);
+            if (first < second) {
+                f1[i] = first;
+                l[1][i] = 1;
+            } else {
+                f2[i] = second;
+                l[1][i] = 2;
+            }
+            first = f2[i-1] + a2[i];
+            System.out.println("s first: " + first);
+            second = f1[i-1] + t1[i-1] + a2[i];
+            System.out.println("s second: " + second);
+            if (first < second) {
+                f2[i] = first;
+                l[2][i] = 2;
+            } else {
+                f1[i] = second;
+                l[2][i] = 1;
+            }
         }
-        return Math.min(t1[nStation-1] + x[0], t2[nStation-1] + x[1]);
+        first = f1[n-1]+x1;
+        second = f2[n-1]+x2;
+        int[] ans = new int[2];
+        if (first < second) {
+            ans[0] = 1;
+            ans[1] = first;
+        } else {
+            ans[0] = 2;
+            ans[1] = second;
+        }
+        return ans;
+    }
 
+    private static void printSolution(int[] l, int n) {
+        for (int i = 0; i < n; i++) {
+            System.out.println("station " + (i+1) +", line " + l[i]);
+        }
     }
 }
