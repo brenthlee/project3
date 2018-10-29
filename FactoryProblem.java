@@ -33,6 +33,8 @@ public class FactoryProblem {
         int[] t1 = new int[n-1];    //transfer time from line 1 to 2
         int[] t2 = new int[n-1];    //transfer time from line 2 to 1
         int[][] l = new int[3][n];
+        int[] f1 = new int[n];
+        int[] f2 = new int[n];
         for (int i = 0; i < n; i++) {
             a1[i] = scanner.nextInt();
         }
@@ -45,17 +47,17 @@ public class FactoryProblem {
         for (int i = 0; i < n-1; i++) {
             t2[i] = scanner.nextInt();
         }
-        int[] ans = assemble(a1, a2, t1, t2, e1, e2, x1, x2, n, l);
-        System.out.println("Fastest time is: " + ans[1]);
+        int[] ans = assemble(a1, a2, t1, t2, e1, e2, x1, x2, n, l, f1, f2);
+        System.out.println("Fastest time is: " + ans[1]); //f*
         System.out.println("\nThe optimal route is:");
-        printSolution(l[ans[0]], n);
+        printSolution(l, n, n, ans[0]);
         System.out.println("\n-----------------------\nEnd of Output\n");
     }
 
-    private static int[] assemble(int[] a1, int[] a2, int[] t1, int[] t2, int e1, int e2, int x1, int x2, int n, int[][] l) {
-        int[] f1 = new int[n];
-        int[] f2 = new int[n];
+    private static int[] assemble(int[] a1, int[] a2, int[] t1, int[] t2, int e1, int e2, int x1, int x2, int n, int[][] l, int[] f1, int[] f2) {
         int first, second;
+        int fStar;
+        int lStar;
         f1[0] = e1 + a1[0];
         l[1][0] = 1;
         f2[0] = e2 + a2[0];
@@ -65,24 +67,24 @@ public class FactoryProblem {
             second = f2[i-1] + t2[i-1] + a1[i];
             if (first < second) {
                 f1[i] = first;
-                l[1][i] = 2; //////////? I thought this was 1
+                l[1][i] = 1;
             } else {
                 f1[i] = second;
-                l[1][i] = 1; //////////? I thought this was 2
+                l[1][i] = 2;
             }
             first = f2[i-1] + a2[i];
             second = f1[i-1] + t1[i-1] + a2[i];
             if (first < second) {
                 f2[i] = first;
-                l[2][i] = 1; //////////? I thought this was 2
+                l[2][i] = 2;
             } else {
                 f2[i] = second;
-                l[2][i] = 2; //////////? I thought this was 1
+                l[2][i] = 1;
             }
         }
         first = f1[n-1]+x1;
         second = f2[n-1]+x2;
-        int[] ans = new int[2];
+        int[] ans = new int[2]; //ans[0] = l* and ans[1] = f*
         if (first < second) {
             ans[0] = 1;
             ans[1] = first;
@@ -93,9 +95,14 @@ public class FactoryProblem {
         return ans;
     }
 
-    private static void printSolution(int[] l, int n) {
-        for (int i = 0; i < n; i++) {
-            System.out.println("station " + (i+1) +", line " + l[i]);
+    private static void printSolution(int[][] l, int n, int cons, int last) {
+        if (n > 0) {
+            printSolution(l, n-1, cons, l[last][n-1]);
+            if (n == cons) {
+                System.out.println("Station: " + n + ", line: " + last);
+            } else {
+                System.out.println("Station: " + n + ", line: " + l[last][n]);
+            }
         }
     }
 }
