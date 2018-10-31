@@ -34,6 +34,7 @@ public class GameProblem {
     }
 
     private static void game(int n, int m, int[][] A) {
-        
+        int[][] S = new int[n][m];                  //table to hold max scores
+        char[][] R = new char[n][m];                //aux table to store decisions (d-down, r-right, e-exit)
     }
 }
