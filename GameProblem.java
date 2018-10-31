@@ -36,56 +36,67 @@ public class GameProblem {
     private static void game(int n, int m, int[][] A) {
         int[][] S = new int[n][m];                  //table to hold max scores
         char[][] R = new char[n][m];                //aux table to store decisions (d-down, r-right, e-exit)
-
-        for (int i = n-1; i >= 0; i--)
-        {
-           for (int j = m-1; j >= 0; j--)
-           {
-              if (i == n-1 && j == m-1)
-              {
-                 S[i][j] = A[n-1][m-1];
-                 R[i][j] = 'e';
-              }
-              else if (j == m-1)
-              {
-                 if(S[i+1][m-1] > 0)
-                 {
-                    S[i][j] = S[i+1][m-1] + A[i][m-1];
-                    R[i][j] = 'd';
-                 }
-                 else
-                 {
-                    S[i][j] = A[i][m-1];
-                    R[i][j] = 'e';
-                 }
-              }
-              else if (i == n-1)
-              {
-                  if(S[n-1][j+1] > 0)
-                 {
-                    S[i][j] = S[n-1][j+1] + A[n-1][j];
-                    R[i][j] = 'r';
-                 }
-                 else
-                 {
-                    S[i][j] = A[n-1][j];
-                    R[i][j] = 'e';
-                 }
-              }
-              else
-              {
-                 if(S[i+1][j] > S[i][j+1])
-                 {
+        int x = n-1;
+        int y = m-1;
+        S[n-1][m-1] = A[n-1][m-1];
+        R[n-1][m-1] = 'e';
+        int max = S[n-1][m-1];
+        for (int i = n-2; i >= 0; i--) {
+            if (S[i+1][m-1] > 0) {
+                S[i][m-1] = S[i+1][m-1] + A[i][m-1];
+                R[i][m-1] = 'd';
+            } else {
+                S[i][m-1] = A[i][m-1];
+                R[i][m-1] = 'e';
+            }
+            if (S[i][m-1] > max) {
+                max = S[i][m-1];
+                x = i;
+                y = m-1;
+            }
+        }
+        for (int j = m-2; j >= 0; j--) {
+            if (S[n-1][j+1] > 0) {
+                S[n-1][j] = S[n-1][j+1] + A[n-1][j];
+                R[n-1][j] = 'r';
+            } else {
+                S[n-1][j] = A[n-1][j];
+                R[n-1][j] = 'e';
+            }
+            if (S[n-1][j] > max) {
+                max = S[n-1][j];
+                x = n-1;
+                y = j;
+            }
+        }
+        for (int i = n-2; i >= 0; i--) {
+            for (int j = m-2; j >= 0; j--) {
+                if (S[i+1][j] > S[i][j+1]) {
                     S[i][j] = S[i+1][j] + A[i][j];
                     R[i][j] = 'd';
-                 }
-                 else
-                 {
+                } else {
                     S[i][j] = S[i][j+1] + A[i][j];
-                    R[i][j] = 'e';
-                 }
-              }
-           }
+                    R[i][j] = 'r';
+                }
+                if (S[i][j] > max) {
+                    max = S[i][j];
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+        System.out.print("Best score: " + max + "\nBest route: ");
+        printSolution(R, x, y);
+        System.out.print("exit\n");
+        System.out.println("\n-----------------------\nEnd of Output\n");
+    }
+
+    private static void printSolution(char[][] R, int i, int j) {
+        System.out.print("[" + (i+1) + "," + (j+1) + "] to ");
+        if (R[i][j] == 'r') {
+            printSolution(R, i, j+1);
+        } else if (R[i][j] == 'd') {
+            printSolution(R, i+1, j);
         }
     }
 }
