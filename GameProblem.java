@@ -36,6 +36,9 @@ public class GameProblem {
     private static void game(int n, int m, int[][] A) {
         int[][] S = new int[n][m];                  //table to hold max scores
         char[][] R = new char[n][m];                //aux table to store decisions (d-down, r-right, e-exit)
+        int max = -9999999;
+        int x = n-1;
+        int y = m-1;
 
         for (int i = n-1; i >= 0; i--)
         {
@@ -82,10 +85,34 @@ public class GameProblem {
                  else
                  {
                     S[i][j] = S[i][j+1] + A[i][j];
-                    R[i][j] = 'e';
+                    R[i][j] = 'r';
                  }
+              }
+              if (S[i][j] > max)
+              {
+                 max = S[i][j];
+                 x = i;
+                 y = j;
               }
            }
         }
+    System.out.println("Best score: " + max);
+    System.out.print("Best route: ");
+    PrintSolution(R, x, y);
+    System.out.println("exit\n");
     }
+
+   private static void PrintSolution(char[][] route, int r, int c)
+   {
+      // print it forwards, so print at the beginning
+      System.out.print("[" + (r+1) + "," + (c+1) + "] to ");
+      if (route[r][c] == 'r')
+      {
+         PrintSolution(route, r, c+1);
+      }
+      else if (route[r][c] == 'd')
+      {
+         PrintSolution(route, r+1, c);
+      }
+   }
 }
